@@ -1,5 +1,10 @@
-	
 <?php 
+session_start();
+echo '<pre>';
+
+//https://app.hotmart.com/docs/getting-started.jsp
+
+//autenticacao e token de acesso https://app.hotmart.com/docs/autenticacao.jsp
 	
  /********************************************************************************************************
   * 										HOTMART - OAUTH 2 API for PHP
@@ -14,9 +19,9 @@
 	Informacoes iniciais necessarias
  */
    $hotmart_server = "http://api.hotmart.com.br";
-   $app_id = "15411665521332178844"; //Codigo que identifica sua aplicacao para o hotmart (fornecida pela hotmart)
-   $app_secret = "e33f16bd-54e9-4c07-8917-c37508c890e6"; //Senha gerada para sua aplicacao (fornecida pela hotmart)
-   $my_url = "http://meudominio.com/mypage.php"; //URL de redirecionamento apos autenticacao no login hotmart e a geracao do code 
+   $app_id = "9971376869094382"; //Codigo que identifica sua aplicacao para o hotmart (fornecida pela hotmart)
+   $app_secret = "c6d7115d-7243-4c0e-ad83-cd5f4e3205be"; //Senha gerada para sua aplicacao (fornecida pela hotmart)
+   $my_url = "http://localhost:81/hotmart/index.php"; //URL de redirecionamento apos autenticacao no login hotmart e a geracao do code 
    
    /**
    
@@ -31,26 +36,32 @@
    //funcao para submeter um POST
    function do_post_request($url, $data, $optional_headers = null)
 	{
+	  $php_errormsg = "";
 	  $params = array('http' => array(
 				  'method' => 'POST',
 				  'content' => $data
 				));
+	  var_dump($params);
+
 	  if ($optional_headers !== null) {
 		$params['http']['header'] = $optional_headers;
 	  }
 	  $ctx = stream_context_create($params);
+	  var_dump($ctx);
 	  $fp = @fopen($url, 'rb', false, $ctx);
+	  var_dump($fp);
 	  if (!$fp) {
 		throw new Exception("Problem with $url, $php_errormsg");
 	  }
 	  $response = @stream_get_contents($fp);
+	  var_dump($response);
 	  if ($response === false) {
 		throw new Exception("Problem reading data from $url, $php_errormsg");
 	  }
 	  return $response;
 	}
 
-   session_start("hotmart_Session");
+   
 	//Este codigo pode ser utilizando como um include ou filtro onde eh necessario estar autenticado
 	//verifica se o code (codigo de acesso) esta na requisicao (ou sessao caso prefira manter o controle do code)
    $code = isset($_REQUEST["code"])?$_REQUEST["code"]:'';
@@ -83,7 +94,7 @@
 	 Exemplo retorno requisicao de Token
 		- {"TokenResponse":{"access_token":"d949f8f614a1793f178c4395c67d508e","expires_in":7200000}}
 	 */
-	 	$token = $response_token->{'TokenResponse'}->{'access_token'};
+	 	echo $token = $response_token->{'TokenResponse'}->{'access_token'};
 		
 	 //Com o token agora eh possivel consultar os servicos hotmart para obter informacoes sobre o usuario
      
@@ -94,4 +105,79 @@
      echo("The state does not match. You may be a victim of CSRF.");
    }
 
- ?>
+
+//informacoes do usuario https://app.hotmart.com/docs/resources.jsp
+   $hotmart_server = "http://api.hotmart.com.br";
+   $resource_user_url = $hotmart_server . "/user_info";				       
+   $post_params = "access_token=" . $token;
+   $response_userinfo = json_decode(do_post_request($resource_user_url,$post_params));
+   echo $response_resources = var_dump($response_userinfo) . " ";
+
+
+   //consultando as compras do usuario https://app.hotmart.com/docs/resources.jsp
+
+   $hotmart_server = "http://api.hotmart.com.br";
+   $resource_compra_url = $hotmart_server . "/purchases";				       
+   $post_params = "access_token=" . $token;
+   $response_compras = json_decode(do_post_request($resource_compra_url,$post_params));
+   var_dump($response_compras);
+   var_dump($response_compras->{'Purchases'});	
+
+   //consultando as assinaturas do usuário https://app.hotmart.com/docs/resources.jsp
+   $hotmart_server = "http://api.hotmart.com.br";   
+   $resource_subsc_url = $hotmart_server . "/subscriber";				       
+   $post_params = "access_token=" . $token;
+   $response_subsc = json_decode(do_post_request($resource_subsc_url,$post_params));
+   var_dump($response_subsc->{'Subscriptions'});
+
+
+/*
+//produtos
+   $hotmart_server = "http://api.hotmart.com.br";				       
+   $resource_produtos_url = $hotmart_server . "/products";				       
+   $post_params = "access_token=" . $token . "&login=rafaclasses@gmail.com&categoria=emagrecimento&apenasMinhasAfiliacoes=true";
+   $response_produtos = json_decode(do_post_request($resource_produtos_url,$post_params));				       
+	//Exemplo dos dados de um produto
+	var_dump($response_produtos->{'ProductCatalog'}->{'Products'});
+*/
+
+/*
+//vendas
+	$startDate = '2018-07-01 00:00:00';
+	$endDate = '2018-07-30 00:00:00';
+    $hotmart_server = "http://api.hotmart.com.br";   
+   $resource_sales_url = $hotmart_server . "/sales";				       
+   $post_params = "access_token=" . $token . "&startDate=" . $startDate . "&endDate=" . $endDate;
+   $response_sales = json_decode(do_post_request($resource_sales_url,$post_params));
+    echo(var_dump($response_sales->{'Sales'}[0]));
+    */
+
+//historico de vendas
+    	$startDate = '2018-07-01 00:00:00';
+	$endDate = '2018-07-30 00:00:00';
+    $hotmart_server = "http://api.hotmart.com.br";   
+   $resource_historysales_url = $hotmart_server . "/sales/history";				       
+   $post_params = "access_token=" . $token . "&startDate=" . $startDate . "&endDate=" . $endDate;
+   $response_sales = json_decode(do_post_request($resource_historysales_url,$post_params));
+    echo(var_dump($response_sales->{'Sales'}[0]));
+
+
+
+    //https://app-vlc.hotmart.com/tools/webhook
+
+
+    /*
+	 autenticacao
+	 token
+	 dados do usuario
+
+	 //provavelmente deve ter sido mudado pela nova api
+	 compras do usuario
+	 assinaturas
+	 produtos
+	 vendas
+	 historico de vendas
+	
+	ou seja vc vai pegar via webhook
+
+    */
