@@ -1,4 +1,5 @@
 <?php 
+namespace Hotmart;
 
 class HotmartRequest
 {
@@ -26,8 +27,12 @@ class HotmartRequest
             curl_setopt($this->_ch, CURLOPT_URL, $url);
             curl_setopt($this->_ch, CURLOPT_POST, count($data));
             curl_setopt($this->_ch, CURLOPT_POSTFIELDS, $fields_string);
-    
-            return json_decode(curl_exec($this->_ch), true);
+            curl_setopt($this->_ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($this->_ch, CURLOPT_HEADER, false);
+            curl_setopt($this->_ch, CURLOPT_FOLLOWLOCATION, false);
+
+            $response = curl_exec($this->_ch);
+            return json_decode($response, true);
 
         } catch(\Exception $e) {
             echo $e->getMessage();

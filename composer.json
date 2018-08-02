@@ -1,0 +1,22 @@
+{
+    "name": "rafael.paulino/hotmart",
+    "description": "Biblioteca de conexao com o hotmart",
+    "type": "library",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Rafael Paulino",
+            "email": "rafaclasses@gmail.com",
+            "homepage": "http://rafaacademy.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0"
+    },
+    "autoload": {
+        "psr-4": { "Hotmart\\": "src/" },
+        "classmap": [
+            "src"
+        ]
+    }
+}
