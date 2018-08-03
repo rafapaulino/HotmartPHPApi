@@ -3,6 +3,7 @@ namespace Hotmart;
 use Hotmart\HotmartStateManager;
 use Hotmart\HotmartLogin;
 use Hotmart\HotmartToken;
+use Hotmart\HotmartUserInfo;
 
 class HotmartFacade
 {
@@ -23,7 +24,12 @@ class HotmartFacade
     public function getToken(): string
     {
         $this->setToken();
-        return $this->_token;
+        
+        if (!is_null($this->_token)) {
+            return $this->_token;
+        } else {
+            return '';
+        }        
     }
 
     private function setToken()
@@ -50,5 +56,14 @@ class HotmartFacade
             $hotmartToken = new HotmartToken($this->_apiUrl, $params);
             $this->_token = $hotmartToken->getToken();
         }
+    }
+
+    public function getUserInfo()
+    {
+        if (trim($this->_token) == "" || is_null($this->_token)) {
+            $this->setToken();
+        }        
+        $user = new HotmartUserInfo($this->_apiUrl);
+        return $user->getUserInfo($this->_token);
     }
 }

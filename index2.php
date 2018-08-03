@@ -9,3 +9,9 @@ $my_url = "http://localhost:81/hotmart/index2.php"; //URL de redirecionamento ap
 
 $facade = new HotmartFacade($app_id, $app_secret, $my_url);
 echo $token = $facade->getToken();
+echo '<hr>';
+$user = $facade->getUserInfo();
+echo '<pre>';
+var_dump($user);
+echo '</pre>';
+echo '<hr>';
