@@ -44,6 +44,7 @@ class HotmartFacade
             $login = new HotmartLogin($this->_apiUrl, $state, $this->_appId, $this->_appSecret, $this->_url);
             $dialog_url = $login->getDialogUrl();
             header("Location: {$dialog_url}");
+            exit;
         
         } elseif ( $session->verifyStateIsValid() ) {
             
