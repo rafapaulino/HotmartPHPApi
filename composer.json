@@ -2,7 +2,7 @@
     "name": "rafael.paulino/hotmart",
     "description": "Biblioteca de conexao com o hotmart",
     "type": "library",
-    "license": "GPL",
+    "license": "BSD-3-Clause",
     "authors": [
         {
             "name": "Rafael Paulino",
